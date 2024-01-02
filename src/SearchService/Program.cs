@@ -5,10 +5,14 @@ using Polly.Extensions.Http;
 using SearchService;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://localhost:7002");
+
+// I don't like this, but it's to get passed a local box issue
+if (builder.Configuration["RunningLocal"] == "true")
+{
+    builder.WebHost.UseUrls("http://localhost:7002");
+}
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddHttpClient<AuctionSvcHttpClient>().AddPolicyHandler(GetPolicy());
@@ -20,6 +24,12 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
+        {
+            host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+            host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+        });
+
         // Retry logic for rabbitmq updating our mongodb (in case mongodb goes down)
         cfg.ReceiveEndpoint("search-auction-created", e =>
         {

@@ -1,7 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://localhost:6001");
+
+// I don't like this, but it's to get passed a local box issue
+if (builder.Configuration["RunningLocal"] == "true")
+{
+    builder.WebHost.UseUrls("http://localhost:6001");
+}
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));

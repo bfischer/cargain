@@ -5,7 +5,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://localhost:7001");
+
+// I don't like this, but it's to get passed a local box issue
+if (builder.Configuration["RunningLocal"] == "true")
+{
+    builder.WebHost.UseUrls("http://localhost:7001");
+}
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -30,6 +35,11 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
+        {
+            host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+            host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+        });
         cfg.ConfigureEndpoints(context);
     });
 });
