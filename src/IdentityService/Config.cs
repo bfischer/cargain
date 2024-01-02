@@ -27,6 +27,17 @@ public static class Config
                 RedirectUris = {"https://www.getpostman.com/oauth2/callback"},
                 ClientSecrets = new[] { new Secret("NotASecret".Sha256()) },
                 AllowedGrantTypes = { GrantType.ResourceOwnerPassword }
+            },
+             new Client {
+                ClientId = "nextApp",
+                ClientName = "nextApp",
+                ClientSecrets = new[] { new Secret("secret".Sha256()) },
+                AllowedScopes = {"openid", "profile", "auctionApp"},
+                RedirectUris = {"http://localhost:3000/api/auth/callback/id-server"},
+                AllowOfflineAccess = true,
+                AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
+                RequirePkce = false,
+                AccessTokenLifetime = 3600*24*30 // Should be shorter time, but useful for development
             }
 
         };
