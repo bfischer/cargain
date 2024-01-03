@@ -37,7 +37,8 @@ public static class Config
                 AllowOfflineAccess = true,
                 AllowedGrantTypes = GrantTypes.CodeAndClientCredentials,
                 RequirePkce = false,
-                AccessTokenLifetime = 3600*24*30 // Should be shorter time, but useful for development
+                AccessTokenLifetime = 3600*24*30, // Should be shorter time, but useful for development
+                AlwaysIncludeUserClaimsInIdToken = true,
             }
 
         };
